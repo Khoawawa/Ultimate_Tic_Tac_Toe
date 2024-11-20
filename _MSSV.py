@@ -23,15 +23,14 @@ class Node():
 
     def expand(self):
         next_moves = self.state.get_valid_moves
-        next_moves = [move for move in next_moves if move not in self.children]
-        move = np.random.choice(next_moves)
 
+        for move in next_moves:
         # Deep copy then play a move to get a new state
-        new_state = deepcopy(self.state)
-        new_state.act_move(move)
+            new_state = deepcopy(self.state)
+            new_state.act_move(move)
 
-        new_node = Node(self, new_state)
-        self.children.append(new_node)
+            new_node = Node(self, new_state)
+            self.children.append(new_node)
 
         return new_node
     
@@ -47,16 +46,20 @@ class Node():
 
     def getExplorationTerm(self):
         """ Encourages the algorithm to explore nodes that have been visited fewer times """
-        return sqrt(log(self.parent.total_simulations)) / (self.total_simulations or 1)
+        if self.total_simulations == 0:
+            return inf
+        return sqrt(log(self.parent.total_simulations)) / (self.total_simulations)
 
     def getExploitationTerm(self):
         """ Focuses on the quality of the node based on the average score from its simulations """
-        return self.score / (self.total_simulations or 1)
+        if self.total_simulations == 0:
+            return inf
+        return self.score / (self.total_simulations)
 
 class MCTS():
     def __init__(self, player_turn, C = sqrt(2)):
         self.player_turn = player_turn
-        self.move_time = 10
+        self.move_time = 1
         self.C = C
 
     def selection(self, current_node, turn):
@@ -98,14 +101,17 @@ class MCTS():
         start_time = time.time()
         while time.time() - start_time < self.move_time:
             selected_node = self.selection(root_node, self.player_turn)
-            child_selected_node = selected_node.expand()
-            game_result = self.simulate(child_selected_node.state)
-            child_selected_node.backPropagate(game_result)
+
+            if selected_node.total_simulations == 0 and selected_node != root_node:
+                game_result = self.simulate(deepcopy(selected_node.state))
+                selected_node.backPropagate(game_result)
+            else:
+                selected_node.expand()
             i = i+1
 
         print(i)
         if root_node.children == None:
             return None
         sorted_children = sorted(root_node.children, key=lambda child: child.getExploitationTerm(), reverse=True)
-        return sorted_children.previous_move
+        return sorted_children[0].state.previous_move
 
