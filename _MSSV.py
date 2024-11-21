@@ -90,9 +90,10 @@ class MCTS():
         
         else:
             final_result = state.game_result(state.global_cells.reshape(3,3))
-            if final_result != self.player_turn:
-                final_result *= -1
-            return final_result
+            if final_result == self.player_turn:
+                return 1
+            else:
+                return -1
         
     def getMove(self, state):
         
@@ -112,6 +113,11 @@ class MCTS():
         print(i)
         if len(root_node.children) == 0:
             return None
+        
+        # winning_children = [child for child in root_node.children if child.state.game_over == True and child.state.player_to_move == self.player_turn]
+        # if len(winning_children) != 0:
+        #     return winning_children[0].state.previous_move
+        
         sorted_children = sorted(root_node.children, key=lambda child: child.getExploitationTerm(), reverse=True)
         return sorted_children[0].state.previous_move
 
