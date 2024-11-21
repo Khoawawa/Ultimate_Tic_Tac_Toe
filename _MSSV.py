@@ -71,7 +71,7 @@ class MCTS():
         if turn == self.player_turn:
             sorted_children = sorted(current_node.children, key=lambda child: child.getExploitationTerm() + self.C*child.getExplorationTerm(), reverse=True)
         else:
-            sorted_children = sorted(current_node.children, key=lambda child: -child.getExploitationTerm() + self.C*child.getExplorationTerm(), reverse=True)
+            sorted_children = sorted(current_node.children, key=lambda child: -child.getExploitationTerm() - self.C*child.getExplorationTerm(), reverse=True)
         return self.selection(sorted_children[0], turn * -1)
     
     def simulate(self, state):
@@ -82,6 +82,7 @@ class MCTS():
             if len(moves) == 0: # Game_Result bug ?
                 score = state.global_cells.sum()
                 return score * 0.1 - 0.1
+                # return 0
             
             # Randmoly choose the next move
             random_move = np.random.choice(moves)
