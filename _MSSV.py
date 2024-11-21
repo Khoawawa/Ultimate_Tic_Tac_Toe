@@ -58,7 +58,7 @@ class Node():
 class MCTS():
     def __init__(self, player_turn, C = sqrt(2)):
         self.player_turn = player_turn
-        self.move_time = 1
+        self.move_time = 3
         self.C = C
 
     def selection(self, current_node, turn):
@@ -110,7 +110,7 @@ class MCTS():
             i = i+1
 
         print(i)
-        if root_node.children == None:
+        if len(root_node.children) == 0:
             return None
         sorted_children = sorted(root_node.children, key=lambda child: child.getExploitationTerm(), reverse=True)
         return sorted_children[0].state.previous_move
