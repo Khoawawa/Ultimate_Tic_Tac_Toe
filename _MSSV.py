@@ -80,9 +80,9 @@ class MCTS():
             moves = state.get_valid_moves
 
             if len(moves) == 0: # Game_Result bug ?
-                # score = state.global_cells.sum()
-                # return score * 0.1 - 0.1
-                return 0
+                score = state.global_cells.sum()
+                return score * 0.1 - 0.1
+                # return 0
             
             # Randmoly choose the next move
             random_move = np.random.choice(moves)
