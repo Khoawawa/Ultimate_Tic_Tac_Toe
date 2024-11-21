@@ -32,7 +32,6 @@ class Node():
             new_node = Node(self, new_state)
             self.children.append(new_node)
 
-        return new_node
     
     def backPropagate(self, game_result):
         self.total_simulations += 1
@@ -76,10 +75,13 @@ class MCTS():
         return self.selection(sorted_children[0], turn * -1)
     
     def simulate(self, state):
-        
+        state.game_result(state.global_cells.reshape(3,3))
         if not state.game_over:
             moves = state.get_valid_moves
 
+            if len(moves) == 0: # Game_Result bug ?
+                return 0
+            
             # Randmoly choose the next move
             random_move = np.random.choice(moves)
             state.act_move(random_move)
@@ -87,12 +89,10 @@ class MCTS():
             return self.simulate(state)
         
         else:
-            if state.game_result != None and state.game_result == self.player_turn:
-                return 1
-            elif state.game_result != None and state.game_result != self.player_turn:
-                return -1
-            else:
-                return 0
+            final_result = state.game_result(state.global_cells.reshape(3,3))
+            if final_result != self.player_turn:
+                final_result *= -1
+            return final_result
         
     def getMove(self, state):
         
