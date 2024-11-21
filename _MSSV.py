@@ -47,7 +47,7 @@ class Node():
         """ Encourages the algorithm to explore nodes that have been visited fewer times """
         if self.total_simulations == 0:
             return inf
-        return sqrt(log(self.parent.total_simulations)) / (self.total_simulations)
+        return sqrt(log(self.parent.total_simulations) / (self.total_simulations))
 
     def getExploitationTerm(self):
         """ Focuses on the quality of the node based on the average score from its simulations """
