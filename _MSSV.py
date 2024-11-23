@@ -1,5 +1,6 @@
 import numpy as np
 from state import *
+from copy import deepcopy
 
 GAME_SCORE = float('inf')
 BOX_SCORE = 100
@@ -147,9 +148,9 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
     if maximize_player:
         max_eval = float('-inf')
         for move in cur_state.get_valid_moves:
-            # print('The current state is: ',cur_state)
+            # print('The current state is: ',cur_state.blocks)
             # print('The current move is: ',move)
-            new_state = State_2(cur_state)
+            new_state = deepcopy(cur_state) 
             # if not new_state.is_valid_move(move):
             #     continue
             new_state.act_move(move)
@@ -166,7 +167,9 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
     else:
         min_eval = float('inf')
         for move in cur_state.get_valid_moves:
-            new_state = State_2(cur_state)
+            # print('The current state is: ',cur_state.blocks)
+            # print('The current move is: ',move)
+            new_state = deepcopy(cur_state)
             # if not new_state.is_valid_move(move):
             #     continue
             new_state.act_move(move)
