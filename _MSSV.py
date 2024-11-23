@@ -150,8 +150,8 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
             # print('The current state is: ',cur_state)
             # print('The current move is: ',move)
             new_state = State_2(cur_state)
-            if not new_state.is_valid_move(move):
-                continue
+            # if not new_state.is_valid_move(move):
+            #     continue
             new_state.act_move(move)
             # print(new_state)
             eval, _ = minimax(new_state,depth - 1, not maximize_player,  player,alpha, beta)
@@ -167,8 +167,8 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
         min_eval = float('inf')
         for move in cur_state.get_valid_moves:
             new_state = State_2(cur_state)
-            if not new_state.is_valid_move(move):
-                continue
+            # if not new_state.is_valid_move(move):
+            #     continue
             new_state.act_move(move)
             eval, _ = minimax(new_state,depth - 1, not maximize_player,player,alpha, beta)
             if eval < min_eval:
