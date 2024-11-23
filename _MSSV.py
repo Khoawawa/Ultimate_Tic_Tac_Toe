@@ -142,6 +142,7 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
     if maximize_player:
         max_eval = float('-inf')
         for move in cur_state.get_valid_moves:
+            print(cur_state)
             new_state = State(cur_state).act_move(move)
             print(new_state)
             eval, _ = minimax(new_state,depth - 1, not maximize_player,  player,alpha, beta)
