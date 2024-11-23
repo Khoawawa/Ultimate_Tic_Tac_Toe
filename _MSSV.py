@@ -136,15 +136,15 @@ def evaluate_search(cur_state: State, player):
             
             
 def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), beta=float('inf')):
-    if depth == 0 or not cur_state.get_valid_moves:
+    if depth == 0:
         return evaluate_search(cur_state, player), None
     best_move = None
     if maximize_player:
         max_eval = float('-inf')
         for move in cur_state.get_valid_moves:
-            print(cur_state)
+            print('The current state is: ',cur_state)
             new_state = State(cur_state).act_move(move)
-            print(new_state)
+            # print(new_state)
             eval, _ = minimax(new_state,depth - 1, not maximize_player,  player,alpha, beta)
             if eval > max_eval:
                 max_eval = eval
