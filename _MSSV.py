@@ -147,8 +147,8 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
     if maximize_player:
         max_eval = float('-inf')
         for move in cur_state.get_valid_moves:
-            print('The current state is: ',cur_state)
-            print('The current move is: ',move)
+            # print('The current state is: ',cur_state)
+            # print('The current move is: ',move)
             new_state = State_2(cur_state)
             if not new_state.is_valid_move(move):
                 continue
