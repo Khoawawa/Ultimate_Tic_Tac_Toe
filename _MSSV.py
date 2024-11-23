@@ -9,6 +9,7 @@ CONSECUTIVE_SCORE = 200
 CONSECUTIVE_SMALL_SCORE = 5
 NO_BENEFIT = - 150
 NO_BENEFIT_SMALL = -20
+DEPTH = 5
 def block(cur_state,player,block_idx,score_method):
     r = block_idx // 3
     c = block_idx % 3
@@ -105,46 +106,53 @@ def check_blocked_win(board, player, r, c, score_method):
 
 def evaluate_search(cur_state: State, player):
     heuristic = 0
+    global_board_3x3 = cur_state.global_cells.reshape(3,3)
     ### check for game win
-    game_result = cur_state.game_result(cur_state.global_cells)
+    game_result = cur_state.game_result(global_board_3x3)
     if game_result is not None:
         return float('inf')*game_result*player
     ### check for small board win
     move = cur_state.previous_move
-    board_result = cur_state.game_result(cur_state.blocks[move.index_local_board])
+    blk_idx = move.index_local_board
+    blk_r = blk_idx // 3
+    blk_c = blk_idx % 3
+    
+    board_result = cur_state.game_result(cur_state.blocks[blk_idx])
+    # WINNING A BOARD
     if board_result:
-        # WINNING A BOARD
         heuristic += BOX_SCORE*board_result*player
         
         if board_result == player:
             # WINNING A BOARD RESULT IN MULTIPLE BOARD WIN
-            heuristic += check_two_in_a_row(cur_state,player,move.index_local_board,CONSECUTIVE_SCORE)
+            heuristic += check_two_in_a_row_small(global_board_3x3,blk_r,blk_c,player,CONSECUTIVE_SCORE,True)
             # WINNING a BOARD RESULTS IN BLOCKING
-            heuristic += block(cur_state, player,move.index_local_board,BLOCK_SCORE)
+            heuristic += block_small(global_board_3x3,blk_r,blk_c, player,BLOCK_SCORE)
             # WINNING a BOARD BLOCK BY OPPONENT
-            heuristic += global_check_blocked_win(cur_state,player,move.index_local_board,NO_BENEFIT)
-            
+            heuristic += check_blocked_win(global_board_3x3,player,blk_r,blk_c,NO_BENEFIT)
+    #NOT WINNING THE BOARD      
     else:
-        #NOT WINNING THE BOARD
         #MAKING 2 MARKS IN A ROW ON LOCAL BOARD
-        
-        heuristic += check_two_in_a_row_small(cur_state.blocks[move.index_local_board],move.y,move.x,player,CONSECUTIVE_SMALL_SCORE,True)
-        heuristic += block_small(cur_state.blocks[move.index_local_board],move.y,move.x,player,BLOCK_SMALL_SCORE)
-        heuristic += check_blocked_win(cur_state.blocks[move.index_local_board],player,move.y,move.x,NO_BENEFIT_SMALL)
+        heuristic += check_two_in_a_row_small(cur_state.blocks[blk_idx],move.y,move.x,player,CONSECUTIVE_SMALL_SCORE,True)
+        heuristic += block_small(cur_state.blocks[blk_idx],move.y,move.x,player,BLOCK_SMALL_SCORE)
+        heuristic += check_blocked_win(cur_state.blocks[blk_idx],player,move.y,move.x,NO_BENEFIT_SMALL)
         
     return heuristic
             
             
 def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), beta=float('inf')):
-    if depth == 0:
+    if depth == 0 or cur_state.game_over or cur_state.get_valid_moves is None:
         return evaluate_search(cur_state, player), None
+    
     best_move = None
     if maximize_player:
         max_eval = float('-inf')
         for move in cur_state.get_valid_moves:
             print('The current state is: ',cur_state)
             print('The current move is: ',move)
-            new_state = State(cur_state).act_move(move)
+            new_state = State_2(cur_state)
+            if not new_state.is_valid_move(move):
+                continue
+            new_state.act_move(move)
             # print(new_state)
             eval, _ = minimax(new_state,depth - 1, not maximize_player,  player,alpha, beta)
             if eval > max_eval:
@@ -158,8 +166,11 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
     else:
         min_eval = float('inf')
         for move in cur_state.get_valid_moves:
-            new_state = State(cur_state).act_move(move)
-            eval, _ = minimax(new_state,depth - 1, alpha, beta, not maximize_player, player)
+            new_state = State_2(cur_state)
+            if not new_state.is_valid_move(move):
+                continue
+            new_state.act_move(move)
+            eval, _ = minimax(new_state,depth - 1, not maximize_player,player,alpha, beta)
             if eval < min_eval:
                 min_eval = eval
                 best_move = move
@@ -169,5 +180,6 @@ def minimax(cur_state:State, depth,maximize_player,player, alpha=float('-inf'), 
         return min_eval, best_move
             
 def select_move(cur_state, remain_time):
-    _,move = minimax(cur_state,5,True,cur_state.player_to_move)
+    _,move = minimax(cur_state,DEPTH,True,cur_state.player_to_move)
+    print(remain_time)
     return move
