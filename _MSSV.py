@@ -11,6 +11,7 @@ CONSECUTIVE_SMALL_SCORE = 5
 NO_BENEFIT = - 150
 NO_BENEFIT_SMALL = -20
 DEPTH = 5
+
 def block(cur_state,player,block_idx,score_method):
     r = block_idx // 3
     c = block_idx % 3
