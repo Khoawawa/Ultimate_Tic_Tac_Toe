@@ -134,9 +134,9 @@ def evaluate_search(cur_state: State, player):
     #NOT WINNING THE BOARD      
     else:
         #MAKING 2 MARKS IN A ROW ON LOCAL BOARD
-        heuristic += check_two_in_a_row_small(cur_state.blocks[blk_idx],move.y,move.x,player,CONSECUTIVE_SMALL_SCORE,True)
-        heuristic += block_small(cur_state.blocks[blk_idx],move.y,move.x,player,BLOCK_SMALL_SCORE)
-        heuristic += check_blocked_win(cur_state.blocks[blk_idx],player,move.y,move.x,NO_BENEFIT_SMALL)
+        heuristic += check_two_in_a_row_small(cur_state.blocks[blk_idx],move.x,move.y,player,CONSECUTIVE_SMALL_SCORE,True)
+        heuristic += block_small(cur_state.blocks[blk_idx],move.x,move.y,player,BLOCK_SMALL_SCORE)
+        heuristic += check_blocked_win(cur_state.blocks[blk_idx],player,move.x,move.y,NO_BENEFIT_SMALL)
         
     return heuristic
             
